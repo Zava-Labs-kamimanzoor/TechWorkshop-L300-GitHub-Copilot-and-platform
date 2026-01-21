@@ -103,21 +103,25 @@ public class ChatService
 
             // Check categories: violence, sexual, hate, self-harm
             // Treat severity >= 2 as unsafe
-            if (result.HateResult?.Severity >= 2)
+            if (result.CategoriesAnalysis.FirstOrDefault(c => c.Category == TextCategory.Hate)?.Severity >= 2)
             {
-                return (false, $"Hate content detected (severity: {result.HateResult.Severity})");
+                var severity = result.CategoriesAnalysis.First(c => c.Category == TextCategory.Hate).Severity;
+                return (false, $"Hate content detected (severity: {severity})");
             }
-            if (result.SelfHarmResult?.Severity >= 2)
+            if (result.CategoriesAnalysis.FirstOrDefault(c => c.Category == TextCategory.SelfHarm)?.Severity >= 2)
             {
-                return (false, $"Self-harm content detected (severity: {result.SelfHarmResult.Severity})");
+                var severity = result.CategoriesAnalysis.First(c => c.Category == TextCategory.SelfHarm).Severity;
+                return (false, $"Self-harm content detected (severity: {severity})");
             }
-            if (result.SexualResult?.Severity >= 2)
+            if (result.CategoriesAnalysis.FirstOrDefault(c => c.Category == TextCategory.Sexual)?.Severity >= 2)
             {
-                return (false, $"Sexual content detected (severity: {result.SexualResult.Severity})");
+                var severity = result.CategoriesAnalysis.First(c => c.Category == TextCategory.Sexual).Severity;
+                return (false, $"Sexual content detected (severity: {severity})");
             }
-            if (result.ViolenceResult?.Severity >= 2)
+            if (result.CategoriesAnalysis.FirstOrDefault(c => c.Category == TextCategory.Violence)?.Severity >= 2)
             {
-                return (false, $"Violence content detected (severity: {result.ViolenceResult.Severity})");
+                var severity = result.CategoriesAnalysis.First(c => c.Category == TextCategory.Violence).Severity;
+                return (false, $"Violence content detected (severity: {severity})");
             }
 
             Console.WriteLine("Content safety check passed");
