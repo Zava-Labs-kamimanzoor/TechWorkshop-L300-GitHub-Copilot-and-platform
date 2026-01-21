@@ -1,0 +1,7 @@
+# Docker ignore file
+**/bin/
+**/obj/
+**/.vs/
+**/.vscode/
+*.user
+*.suo

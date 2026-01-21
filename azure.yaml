@@ -1,0 +1,23 @@
+# AZD project configuration for ZavaStorefront
+name: zavastorefront-dev
+metadata:
+  template: custom
+services:
+  web:
+    project: ./src
+    language: csharp
+    host: appservice
+    docker:
+      path: ./Dockerfile
+      context: ./
+hooks:
+  predeploy:
+    posix:
+      shell: sh
+      run: ./infra/hooks/predeploy.sh
+    windows:
+      shell: pwsh
+      run: ./infra/hooks/predeploy.ps1
+infra:
+  provider: bicep
+  path: infra
