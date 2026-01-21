@@ -6,6 +6,7 @@ param acrLoginServer string
 param appInsightsConnectionString string
 param appInsightsInstrumentationKey string
 param foundryEndpoint string
+param foundryModelDeploymentName string
 
 resource plan 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: '${name}-plan'
@@ -53,12 +54,16 @@ resource app 'Microsoft.Web/sites@2022-03-01' = {
           value: foundryEndpoint
         }
         {
+          name: 'FOUNDRY_MODEL_DEPLOYMENT_NAME'
+          value: foundryModelDeploymentName
+        }
+        {
           name: 'DOCKER_REGISTRY_SERVER_URL'
           value: 'https://${acrLoginServer}'
         }
         {
           name: 'WEBSITES_PORT'
-          value: '80'
+          value: '8080'
         }
       ]
       acrUseManagedIdentityCreds: true

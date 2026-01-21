@@ -48,7 +48,7 @@ module appInsights 'modules/appinsights.bicep' = {
   }
 }
 
-// Deploy Microsoft Foundry
+// Deploy Microsoft Foundry (deployed first to ensure model availability)
 module foundry 'modules/foundry.bicep' = {
   scope: rg
   name: 'foundryModule'
@@ -58,10 +58,13 @@ module foundry 'modules/foundry.bicep' = {
   }
 }
 
-// Deploy App Service Plan and Web App
+// Deploy App Service Plan and Web App (depends on Foundry being ready)
 module appService 'modules/appservice.bicep' = {
   scope: rg
   name: 'appServiceModule'
+  dependsOn: [
+    foundry
+  ]
   params: {
     name: appServiceName
     location: location
@@ -70,6 +73,7 @@ module appService 'modules/appservice.bicep' = {
     appInsightsConnectionString: appInsights.outputs.connectionString
     appInsightsInstrumentationKey: appInsights.outputs.instrumentationKey
     foundryEndpoint: foundry.outputs.endpoint
+    foundryModelDeploymentName: foundry.outputs.modelDeploymentName
   }
 }
 
@@ -91,4 +95,5 @@ output APP_SERVICE_NAME string = appService.outputs.name
 output APP_SERVICE_URL string = appService.outputs.uri
 output APPLICATION_INSIGHTS_NAME string = appInsights.outputs.name
 output FOUNDRY_ENDPOINT string = foundry.outputs.endpoint
+output FOUNDRY_MODEL_DEPLOYMENT_NAME string = foundry.outputs.modelDeploymentName
 output SERVICE_WEB_IMAGE_NAME string = 'web:latest'
