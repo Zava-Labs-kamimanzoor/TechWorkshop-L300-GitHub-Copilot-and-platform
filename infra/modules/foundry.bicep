@@ -1,6 +1,7 @@
 // modules/foundry.bicep - Azure OpenAI Service for GPT-4o-mini
 param name string
 param location string
+param logAnalyticsWorkspaceId string
 param modelName string = 'gpt-4o-mini'
 param deploymentName string = 'gpt-4o-mini'
 param modelVersion string = '2024-07-18'
@@ -15,6 +16,7 @@ resource openai 'Microsoft.CognitiveServices/accounts@2023-05-01' = {
   properties: {
     customSubDomainName: name
     publicNetworkAccess: 'Enabled'
+    disableLocalAuth: true
   }
 }
 
@@ -32,6 +34,59 @@ resource modelDeployment 'Microsoft.CognitiveServices/accounts/deployments@2023-
       name: modelName
       version: modelVersion
     }
+  }
+}
+
+// Enable diagnostic settings for Foundry
+resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: '${name}-diagnostics'
+  scope: openai
+  properties: {
+    workspaceId: logAnalyticsWorkspaceId
+    logs: [
+      {
+        category: 'Audit'
+        enabled: true
+        retentionPolicy: {
+          enabled: false
+          days: 0
+        }
+      }
+      {
+        category: 'RequestResponse'
+        enabled: true
+        retentionPolicy: {
+          enabled: false
+          days: 0
+        }
+      }
+      {
+        category: 'AzureOpenAIRequestUsage'
+        enabled: true
+        retentionPolicy: {
+          enabled: false
+          days: 0
+        }
+      }
+      {
+        category: 'Trace'
+        enabled: true
+        retentionPolicy: {
+          enabled: false
+          days: 0
+        }
+      }
+    ]
+    metrics: [
+      {
+        category: 'AllMetrics'
+        enabled: true
+        retentionPolicy: {
+          enabled: false
+          days: 0
+        }
+      }
+    ]
   }
 }
 

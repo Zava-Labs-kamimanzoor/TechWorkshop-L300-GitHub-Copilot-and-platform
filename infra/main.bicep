@@ -55,6 +55,7 @@ module foundry 'modules/foundry.bicep' = {
   params: {
     name: foundryName
     location: location
+    logAnalyticsWorkspaceId: logAnalytics.outputs.id
   }
 }
 
@@ -83,6 +84,16 @@ module acrRoleAssignment 'modules/acr-role-assignment.bicep' = {
   name: 'acrRoleAssignmentModule'
   params: {
     acrName: acr.outputs.name
+    principalId: appService.outputs.managedIdentityPrincipalId
+  }
+}
+
+// Assign Cognitive Services OpenAI User role to App Service managed identity
+module foundryRoleAssignment 'modules/foundry-role-assignment.bicep' = {
+  scope: rg
+  name: 'foundryRoleAssignmentModule'
+  params: {
+    foundryName: foundry.outputs.name
     principalId: appService.outputs.managedIdentityPrincipalId
   }
 }
