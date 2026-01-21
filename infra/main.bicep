@@ -59,6 +59,19 @@ module foundry 'modules/foundry.bicep' = {
   }
 }
 
+// Deploy Azure Workbook for AI Services Observability
+module workbook 'modules/workbook.bicep' = {
+  scope: rg
+  name: 'workbookModule'
+  params: {
+    workbookName: guid(rg.id, 'ai-services-workbook')
+    workbookDisplayName: 'AI Services Observability'
+    logAnalyticsWorkspaceId: logAnalytics.outputs.id
+    workbookContent: loadTextContent('workbook-template.json')
+    location: location
+  }
+}
+
 // Deploy App Service Plan and Web App (depends on Foundry being ready)
 module appService 'modules/appservice.bicep' = {
   scope: rg
@@ -107,4 +120,5 @@ output APP_SERVICE_URL string = appService.outputs.uri
 output APPLICATION_INSIGHTS_NAME string = appInsights.outputs.name
 output FOUNDRY_ENDPOINT string = foundry.outputs.endpoint
 output FOUNDRY_MODEL_DEPLOYMENT_NAME string = foundry.outputs.modelDeploymentName
+output WORKBOOK_ID string = workbook.outputs.workbookId
 output SERVICE_WEB_IMAGE_NAME string = 'web:latest'
